@@ -37,5 +37,14 @@ public static class DependencyInjection
             .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+        
+        // Register request handlers (MediatR compatibility)
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
     }
+    
+    
 }

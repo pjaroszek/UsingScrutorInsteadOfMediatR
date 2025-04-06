@@ -36,4 +36,17 @@ public class Mediator : IMediator
 
         return await (Task<TResult>)handlerType.GetMethod("HandleAsync")!.Invoke(handler, new object[] { query, cancellationToken })!;
     }
+    
+    public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    {
+        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(request.GetType(), typeof(TResponse));
+        var handler = _serviceProvider.GetService(handlerType);
+
+        if (handler == null)
+        {
+            throw new InvalidOperationException($"No handler found for request type {request.GetType().Name}");
+        }
+
+        return await (Task<TResponse>)handlerType.GetMethod("HandleAsync")!.Invoke(handler, new object[] { request, cancellationToken })!;
+    }
 }
